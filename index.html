@@ -54,6 +54,10 @@
 
       <!-- Controls -->
       <div class="header-controls">
+        <div class="user-profile">
+          <i data-lucide="user"></i>
+          <input type="text" id="username-input" placeholder="Your Name" value="Anonymous" title="Set your name to own tasks">
+        </div>
         <button id="theme-toggle" class="btn btn-icon" title="Toggle Theme" aria-label="Toggle Theme">
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
@@ -97,6 +101,13 @@
               <option value="all">All Tasks</option>
             </select>
           </div>
+          <div class="filter-group">
+            <span class="filter-label">Owner:</span>
+            <select id="owner-filter">
+              <option value="all">All Owners</option>
+              <option value="me">Me Only</option>
+            </select>
+          </div>
           <button id="quick-add-trigger-btn" class="btn btn-primary">
             <i data-lucide="plus"></i> New Task
           </button>
@@ -121,26 +132,38 @@
               </div>
             </div>
             <div class="form-row secondary-row">
-              <div class="form-group">
-                <label for="task-due-date">Due Date</label>
-                <input type="date" id="task-due-date">
-              </div>
-              <div class="form-group">
-                <label for="task-tag">Category Tag</label>
-                <input type="text" id="task-tag" placeholder="e.g. Work, Health, Personal" list="suggested-tags">
-                <datalist id="suggested-tags">
-                  <option value="Work"></option>
-                  <option value="Personal"></option>
-                  <option value="Health"></option>
-                  <option value="Finance"></option>
-                  <option value="Learning"></option>
-                </datalist>
-              </div>
-              <div class="form-group flex-2">
-                <label for="task-notes">Notes / Description</label>
-                <input type="text" id="task-notes" placeholder="Add details or subtasks...">
-              </div>
-            </div>
+               <div class="form-group">
+                 <label for="task-due-date">Due Date</label>
+                 <input type="date" id="task-due-date">
+               </div>
+               <div class="form-group">
+                 <label for="task-tag">Category Tag</label>
+                 <input type="text" id="task-tag" placeholder="e.g. Work, Health, Personal" list="suggested-tags">
+                 <datalist id="suggested-tags">
+                   <option value="Work"></option>
+                   <option value="Personal"></option>
+                   <option value="Health"></option>
+                   <option value="Finance"></option>
+                   <option value="Learning"></option>
+                 </datalist>
+               </div>
+               <div class="form-group">
+                 <label for="task-owner">Owner Name</label>
+                 <input type="text" id="task-owner" placeholder="Me">
+               </div>
+               <div class="form-group checkbox-group-inline">
+                 <label class="checkbox-container-inline">
+                   <input type="checkbox" id="task-private">
+                   <span class="checkbox-label-text">Private Task (Only Me)</span>
+                 </label>
+               </div>
+             </div>
+             <div class="form-row">
+               <div class="form-group flex-2">
+                 <label for="task-notes">Notes / Description</label>
+                 <input type="text" id="task-notes" placeholder="Add details or subtasks...">
+               </div>
+             </div>
             <div class="form-actions">
               <button type="button" id="cancel-add-btn" class="btn btn-secondary">Cancel</button>
               <button type="submit" class="btn btn-accent">Create Task</button>
@@ -341,9 +364,21 @@
               <input type="date" id="edit-task-due-date">
             </div>
           </div>
-          <div class="form-group">
-            <label for="edit-task-tag">Category Tag</label>
-            <input type="text" id="edit-task-tag" placeholder="e.g. Work, Personal">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-task-tag">Category Tag</label>
+              <input type="text" id="edit-task-tag" placeholder="e.g. Work, Personal">
+            </div>
+            <div class="form-group">
+              <label for="edit-task-owner">Owner Name</label>
+              <input type="text" id="edit-task-owner" placeholder="Owner">
+            </div>
+          </div>
+          <div class="form-group checkbox-group-inline" style="margin-bottom: 1rem;">
+            <label class="checkbox-container-inline">
+              <input type="checkbox" id="edit-task-private">
+              <span class="checkbox-label-text">Private Task (Only Me)</span>
+            </label>
           </div>
           <div class="form-group">
             <label for="edit-task-notes">Notes</label>
@@ -358,6 +393,25 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+  
+  <!-- Onboarding Splash Screen -->
+  <div class="splash-overlay" id="splash-screen">
+    <div class="splash-card">
+      <div class="splash-logo">
+        <img src="favicon.png" alt="FocusGrid Logo" width="64" height="64">
+      </div>
+      <h2>Welcome to FocusGrid</h2>
+      <p>Prioritize your tasks using the Eisenhower Matrix. Please choose a username to get started.</p>
+      <form id="splash-form">
+        <div class="form-group" style="text-align: left;">
+          <label for="splash-username-input" style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Choose a Username</label>
+          <input type="text" id="splash-username-input" placeholder="e.g. John, Mary..." required autocomplete="off" style="width: 100%;">
+          <div class="error-message" id="splash-error" style="display: none; color: #ff5555; font-size: 0.85rem; margin-top: 0.5rem; text-align: center; font-weight: 500; padding: 0.5rem; background: rgba(255, 85, 85, 0.1); border-radius: 6px; border: 1px solid rgba(255, 85, 85, 0.2);"></div>
+        </div>
+        <button type="submit" class="btn btn-accent" style="width: 100%; justify-content: center; margin-top: 1.2rem; font-weight: 600; padding: 0.75rem;">Get Started</button>
+      </form>
     </div>
   </div>
 

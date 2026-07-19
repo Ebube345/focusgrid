@@ -44,10 +44,18 @@ function initializeDb() {
         dueDate TEXT,
         tag TEXT,
         notes TEXT,
-        createdAt TEXT
+        createdAt TEXT,
+        owner TEXT DEFAULT 'Anonymous'
       )
     `, (err) => {
-      if (err) console.error('Error creating tasks table:', err.message);
+      if (err) {
+        console.error('Error creating tasks table:', err.message);
+      } else {
+        // Safe migration: Add owner column if it doesn't exist
+        db.run("ALTER TABLE tasks ADD COLUMN owner TEXT DEFAULT 'Anonymous'", (alterErr) => {
+          // Ignore error if column already exists
+        });
+      }
     });
 
     // Settings table (for theme, lifetimeCompleted)
@@ -58,6 +66,16 @@ function initializeDb() {
       )
     `, (err) => {
       if (err) console.error('Error creating settings table:', err.message);
+    });
+
+    // Users table for username claiming validation
+    db.run(`
+      CREATE TABLE IF NOT EXISTS users (
+        username TEXT PRIMARY KEY,
+        userId TEXT NOT NULL
+      )
+    `, (err) => {
+      if (err) console.error('Error creating users table:', err.message);
     });
   });
 }
@@ -97,6 +115,81 @@ app.get('/style.css', (req, res) => {
 
 // --- API Endpoints ---
 
+// GET: Check username existence and ownership
+app.get('/api/users/check', async (req, res) => {
+  const username = (req.query.username || '').trim().toLowerCase();
+  if (!username) {
+    return res.status(400).json({ error: 'Username query parameter is required.' });
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/users?username=ilike.${username}`, {
+        headers: getSupabaseHeaders()
+      });
+      if (!response.ok) {
+        throw new Error(`Supabase error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (data.length > 0) {
+        res.json({ exists: true, userId: data[0].userId });
+      } else {
+        res.json({ exists: false });
+      }
+    } catch (err) {
+      console.error('Supabase GET user check error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  } else {
+    db.get('SELECT userId FROM users WHERE LOWER(username) = ?', [username], (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (row) {
+        res.json({ exists: true, userId: row.userId });
+      } else {
+        res.json({ exists: false });
+      }
+    });
+  }
+});
+
+// POST: Register a new user
+app.post('/api/users', async (req, res) => {
+  const { username, userId } = req.body;
+  if (!username || !userId) {
+    return res.status(400).json({ error: 'Username and userId are required.' });
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+        method: 'POST',
+        headers: {
+          ...getSupabaseHeaders(),
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ username: username.trim(), userId })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Supabase error: ${response.statusText} - ${errText}`);
+      }
+      res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+      console.error('Supabase POST user registration error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  } else {
+    db.run('INSERT INTO users (username, userId) VALUES (?, ?)', [username.trim(), userId], (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ message: 'User registered successfully' });
+    });
+  }
+});
+
 // GET: All tasks
 app.get('/api/tasks', async (req, res) => {
   if (isSupabaseConfigured) {
@@ -130,7 +223,7 @@ app.get('/api/tasks', async (req, res) => {
 
 // POST: Create a task
 app.post('/api/tasks', async (req, res) => {
-  const { id, title, quadrant, completed, dueDate, tag, notes, createdAt } = req.body;
+  const { id, title, quadrant, completed, dueDate, tag, notes, createdAt, owner } = req.body;
   if (!title || !quadrant) {
     return res.status(400).json({ error: 'Title and Quadrant are required.' });
   }
@@ -145,7 +238,8 @@ app.post('/api/tasks', async (req, res) => {
         dueDate: dueDate || '',
         tag: tag || '',
         notes: notes || '',
-        createdAt: createdAt || new Date().toISOString()
+        createdAt: createdAt || new Date().toISOString(),
+        owner: owner || 'Anonymous'
       };
       const response = await fetch(`${SUPABASE_URL}/rest/v1/tasks`, {
         method: 'POST',
@@ -166,8 +260,8 @@ app.post('/api/tasks', async (req, res) => {
     }
   } else {
     const query = `
-      INSERT INTO tasks (id, title, quadrant, completed, dueDate, tag, notes, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO tasks (id, title, quadrant, completed, dueDate, tag, notes, createdAt, owner)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
       id,
@@ -177,7 +271,8 @@ app.post('/api/tasks', async (req, res) => {
       dueDate || '',
       tag || '',
       notes || '',
-      createdAt || new Date().toISOString()
+      createdAt || new Date().toISOString(),
+      owner || 'Anonymous'
     ];
 
     db.run(query, params, function(err) {
@@ -192,7 +287,7 @@ app.post('/api/tasks', async (req, res) => {
 // PUT: Update a task
 app.put('/api/tasks/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, quadrant, completed, dueDate, tag, notes } = req.body;
+  const { title, quadrant, completed, dueDate, tag, notes, owner } = req.body;
 
   if (!title || !quadrant) {
     return res.status(400).json({ error: 'Title and Quadrant are required.' });
@@ -206,7 +301,8 @@ app.put('/api/tasks/:id', async (req, res) => {
         completed: !!completed,
         dueDate: dueDate || '',
         tag: tag || '',
-        notes: notes || ''
+        notes: notes || '',
+        owner: owner || 'Anonymous'
       };
       const response = await fetch(`${SUPABASE_URL}/rest/v1/tasks?id=eq.${id}`, {
         method: 'PATCH',
@@ -225,7 +321,7 @@ app.put('/api/tasks/:id', async (req, res) => {
   } else {
     const query = `
       UPDATE tasks
-      SET title = ?, quadrant = ?, completed = ?, dueDate = ?, tag = ?, notes = ?
+      SET title = ?, quadrant = ?, completed = ?, dueDate = ?, tag = ?, notes = ?, owner = ?
       WHERE id = ?
     `;
     const params = [
@@ -235,6 +331,7 @@ app.put('/api/tasks/:id', async (req, res) => {
       dueDate || '',
       tag || '',
       notes || '',
+      owner || 'Anonymous',
       id
     ];
 

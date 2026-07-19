@@ -201,7 +201,49 @@ body {
 /* Header Controls */
 .header-controls {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.75rem;
+  transition: border-color var(--transition-normal);
+}
+
+.user-profile:focus-within {
+  border-color: var(--border-focus);
+}
+
+.user-profile i {
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--text-muted);
+}
+
+.user-profile input {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  width: 95px;
+  outline: none;
+  font-weight: 600;
+}
+
+.user-profile input[readonly] {
+  cursor: default;
+  pointer-events: none;
+}
+
+.user-profile:has(input[readonly]):focus-within {
+  border-color: var(--border-color);
 }
 
 /* General Button Styles */
@@ -893,6 +935,42 @@ html[data-theme="light"] .moon-icon {
   color: var(--text-muted);
 }
 
+.owner-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(22, 163, 74, 0.08);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+.owner-pill i {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.private-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(244, 168, 58, 0.08);
+  color: #f4a83a;
+  border: 1px solid rgba(244, 168, 58, 0.15);
+}
+
+.private-pill i {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
 .date-pill i {
   width: 0.75rem;
   height: 0.75rem;
@@ -1413,4 +1491,130 @@ html[data-theme="light"] .moon-icon {
   .modal-actions .right-actions .btn {
     flex: 1;
   }
+}
+
+.checkbox-group-inline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.checkbox-container-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container-inline input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: #16a34a;
+  cursor: pointer;
+}
+
+/* Onboarding Splash Screen */
+.splash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 5, 8, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+}
+
+[data-theme="light"] .splash-overlay {
+  background: rgba(245, 245, 247, 0.85);
+}
+
+.splash-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: splashEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes splashEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.splash-logo {
+  margin-bottom: 1.5rem;
+}
+
+.splash-logo img {
+  filter: drop-shadow(0 4px 10px rgba(87, 87, 153, 0.3));
+  animation: logoPulse 3s infinite ease-in-out;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.splash-card h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+}
+
+.splash-card p {
+  font-size: 0.925rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+/* Readonly Task Cards belonging to other users */
+.task-card.readonly-card {
+  cursor: default;
+  opacity: 0.85;
+  transition: opacity var(--transition-normal);
+}
+
+.task-card.readonly-card:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  opacity: 0.95;
+}
+
+.task-card.readonly-card .task-checkbox-container {
+  cursor: not-allowed;
 }
