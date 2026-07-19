@@ -304,6 +304,17 @@ body {
   border-color: var(--color-q1);
 }
 
+/* Logout button — muted by default, rose-tinted on hover */
+.btn-logout {
+  color: var(--text-muted);
+}
+
+.btn-logout:hover {
+  background: var(--color-q1-glow);
+  border-color: var(--color-q1);
+  color: var(--color-q1);
+}
+
 .btn-primary {
   background: linear-gradient(135deg, #22c55e, #15803d);
   color: #fff;

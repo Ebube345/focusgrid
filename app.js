@@ -102,7 +102,10 @@ const elements = {
   nuggetTickerText: document.getElementById('nugget-ticker-text'),
   nuggetsGrid: document.getElementById('nuggets-grid'),
   nuggetsNextBtn: document.getElementById('nuggets-next-btn'),
-  nuggetsCounter: document.getElementById('nuggets-counter')
+  nuggetsCounter: document.getElementById('nuggets-counter'),
+
+  // Logout
+  logoutBtn: document.getElementById('logout-btn')
 };
 
 // --- Local Private Storage Helpers ---
@@ -1128,6 +1131,29 @@ function toggleNuggetsDrawer(show) {
   }
 }
 
+// --- Logout ---
+
+function logout() {
+  if (!confirm('Log out and switch to a different username?')) return;
+
+  // Clear session identity from this device
+  localStorage.removeItem('focusgrid_username');
+  localStorage.removeItem('focusgrid_user_id');
+
+  // Reset username field in header
+  elements.usernameInput.value = '';
+  elements.usernameInput.readOnly = false;
+
+  // Clear any pre-filled splash input and error
+  elements.splashUsernameInput.value = '';
+  elements.splashError.style.display = 'none';
+  elements.splashError.textContent = '';
+
+  // Re-show the onboarding splash
+  elements.splashScreen.classList.remove('hidden');
+  elements.splashUsernameInput.focus();
+}
+
 // --- Helper Functions ---
 
 function formatDate(dateStr) {
@@ -1405,6 +1431,11 @@ function initEventListeners() {
       renderNuggetsList();
       if (typeof lucide !== 'undefined') lucide.createIcons();
     });
+  }
+
+  // Logout
+  if (elements.logoutBtn) {
+    elements.logoutBtn.addEventListener('click', logout);
   }
 }
 
