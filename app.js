@@ -1136,9 +1136,9 @@ function toggleNuggetsDrawer(show) {
 function logout() {
   if (!confirm('Log out and switch to a different username?')) return;
 
-  // Clear session identity from this device
+  // Clear only the username — keep the userId so this device can still
+  // reclaim its username or register a new one without a conflict.
   localStorage.removeItem('focusgrid_username');
-  localStorage.removeItem('focusgrid_user_id');
 
   // Reset username field in header
   elements.usernameInput.value = '';
