@@ -1491,6 +1491,30 @@ html[data-theme="light"] .moon-icon {
   .modal-actions .right-actions .btn {
     flex: 1;
   }
+
+  .nuggets-drawer {
+    width: 100%;
+    max-width: 100vw;
+    right: -100%;
+    padding: 1.25rem;
+    border-left: none;
+  }
+  
+  .nuggets-drawer.active {
+    right: 0;
+  }
+
+  .nuggets-title-area h2 {
+    font-size: 1.15rem;
+  }
+
+  #nugget-ticker-text {
+    font-size: 0.8rem;
+  }
+
+  .nugget-card {
+    padding: 0.875rem;
+  }
 }
 
 .checkbox-group-inline {
