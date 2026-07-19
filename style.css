@@ -1013,6 +1013,10 @@ html[data-theme="light"] .moon-icon {
   height: 0.9rem;
 }
 
+.stats-overlay {
+  display: none;
+}
+
 /* Stats Sidebar Drawer styling */
 .stats-sidebar {
   width: 350px;
@@ -1331,23 +1335,60 @@ html[data-theme="light"] .moon-icon {
     flex-direction: column;
   }
 
-  .stats-sidebar {
-    width: 100%;
-    max-height: 0;
+  .stats-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(5, 5, 8, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 99;
     opacity: 0;
-    transition: max-height var(--transition-normal), opacity var(--transition-normal);
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+  }
+
+  .stats-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stats-sidebar {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 420px;
+    max-width: 90vw;
+    height: 100vh;
+    border-radius: 0;
+    border-left: 1px solid var(--border-color);
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    z-index: 100;
+    max-height: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    margin: 0 !important;
+    pointer-events: none;
+    transition: right var(--transition-normal), opacity var(--transition-normal);
   }
 
   .stats-sidebar.collapsed {
-    width: 100%;
-    max-height: 0;
+    right: -450px;
+    width: 420px;
+    max-width: 90vw;
     margin-left: 0;
+    opacity: 0 !important;
+    pointer-events: none;
   }
 
   .stats-sidebar:not(.collapsed) {
-    max-height: 700px;
-    opacity: 1;
-    margin-top: 1rem;
+    right: 0;
+    opacity: 1 !important;
+    pointer-events: auto;
   }
 }
 
@@ -1514,6 +1555,24 @@ html[data-theme="light"] .moon-icon {
 
   .nugget-card {
     padding: 0.875rem;
+  }
+
+  .stats-sidebar {
+    width: 100%;
+    max-width: 100vw;
+    right: -100% !important;
+    padding: 1.25rem;
+    border-left: none;
+  }
+
+  .stats-sidebar.collapsed {
+    width: 100%;
+    max-width: 100vw;
+    right: -100% !important;
+  }
+  
+  .stats-sidebar:not(.collapsed) {
+    right: 0 !important;
   }
 }
 

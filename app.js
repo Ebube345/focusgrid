@@ -16,6 +16,7 @@ const elements = {
   themeToggle: document.getElementById('theme-toggle'),
   statsToggle: document.getElementById('stats-panel-toggle'),
   statsSidebar: document.getElementById('stats-sidebar'),
+  statsOverlay: document.getElementById('stats-overlay'),
   closeStatsBtn: document.getElementById('close-stats-btn'),
   quickAddTrigger: document.getElementById('quick-add-trigger-btn'),
   quickAddPanel: document.getElementById('quick-add-panel'),
@@ -1159,12 +1160,26 @@ function initEventListeners() {
   elements.statsToggle.addEventListener('click', () => {
     state.sidebarOpen = !state.sidebarOpen;
     elements.statsSidebar.classList.toggle('collapsed', !state.sidebarOpen);
+    if (elements.statsOverlay) {
+      elements.statsOverlay.classList.toggle('active', state.sidebarOpen);
+    }
   });
 
   elements.closeStatsBtn.addEventListener('click', () => {
     state.sidebarOpen = false;
     elements.statsSidebar.classList.add('collapsed');
+    if (elements.statsOverlay) {
+      elements.statsOverlay.classList.remove('active');
+    }
   });
+
+  if (elements.statsOverlay) {
+    elements.statsOverlay.addEventListener('click', () => {
+      state.sidebarOpen = false;
+      elements.statsSidebar.classList.add('collapsed');
+      elements.statsOverlay.classList.remove('active');
+    });
+  }
 
   // Collapse/Expand Add Panel
   elements.quickAddTrigger.addEventListener('click', () => {
@@ -1344,6 +1359,7 @@ function initEventListeners() {
     }
   });
 
+  /* Clear All Tasks event listener disabled
   elements.clearAllBtn.addEventListener('click', async () => {
     if (confirm("⚠️ WARNING: This will permanently delete ALL tasks in your FocusGrid database. Are you sure?")) {
       try {
@@ -1362,6 +1378,7 @@ function initEventListeners() {
       }
     }
   });
+  */
 
   // A-Player Nuggets Drawer Event Listeners
   if (elements.nuggetsToggle) {

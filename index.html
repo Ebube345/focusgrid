@@ -75,9 +75,10 @@
           <i data-lucide="upload"></i>
         </button>
         <input type="file" id="import-file-input" style="display: none;" accept=".json">
-        <button id="clear-all-btn" class="btn btn-icon btn-danger" title="Clear All Tasks" aria-label="Clear All Tasks">
+        <!-- Clear All Tasks disabled -->
+        <!-- <button id="clear-all-btn" class="btn btn-icon btn-danger" title="Clear All Tasks" aria-label="Clear All Tasks">
           <i data-lucide="trash-2"></i>
-        </button>
+        </button> -->
       </div>
     </header>
 
@@ -252,6 +253,8 @@
         </div>
       </div>
 
+      <!-- Stats Overlay for Drawer -->
+      <div class="stats-overlay" id="stats-overlay"></div>
       <!-- Stats / Sidebar (Collapsible drawer) -->
       <aside class="stats-sidebar collapsed" id="stats-sidebar">
         <header class="sidebar-header">
