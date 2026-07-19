@@ -466,7 +466,7 @@ html[data-theme="light"] .moon-icon {
   padding: 1.25rem;
   transition: all var(--transition-normal);
   overflow: hidden;
-  max-height: 500px;
+  max-height: 700px;
 }
 
 .quick-add-section.collapsed {
@@ -1433,9 +1433,31 @@ html[data-theme="light"] .moon-icon {
     flex: 1;
   }
 
+  /* Make the New Task button full-width when filter bar is stacked */
+  .filter-bar #quick-add-trigger-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .form-row {
     flex-direction: column;
     gap: 0.875rem;
+  }
+
+  /* Form actions: stack buttons full-width */
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 0.625rem;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Expand quick-add max-height for stacked fields */
+  .quick-add-section {
+    max-height: 900px;
   }
 
   .quadrant {
