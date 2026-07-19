@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FocusGrid — A premium Eisenhower Matrix task manager to help you prioritize ruthlessly and work with intention.">
+  <meta name="theme-color" content="#050508">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>FocusGrid | Premium Eisenhower Matrix Task Manager</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Stylesheet -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i data-lucide="layout-grid"></i>
+        </div>
+        <div class="logo-text">
+          <h1>FocusGrid</h1>
+          <span>Eisenhower Matrix Productivity</span>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Header Panel -->
+      <div class="header-metrics">
+        <div class="metric-pill" id="stat-total-pill">
+          <span class="label">Total Tasks</span>
+          <span class="value" id="header-total-tasks">0</span>
+        </div>
+        <div class="metric-pill" id="stat-progress-pill">
+          <span class="label">Completion</span>
+          <span class="value" id="header-completion-rate">0%</span>
+        </div>
+        <div class="metric-pill" id="stat-score-pill">
+          <span class="label">Focus Score</span>
+          <span class="value" id="header-focus-score">100</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="header-controls">
+        <button id="theme-toggle" class="btn btn-icon" title="Toggle Theme" aria-label="Toggle Theme">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        <button id="stats-panel-toggle" class="btn btn-icon" title="View Detailed Analytics" aria-label="View Detailed Analytics">
+          <i data-lucide="bar-chart-2"></i>
+        </button>
+        <button id="export-btn" class="btn btn-icon" title="Export Tasks (JSON)" aria-label="Export Tasks">
+          <i data-lucide="download"></i>
+        </button>
+        <button id="import-btn-trigger" class="btn btn-icon" title="Import Tasks" aria-label="Import Tasks">
+          <i data-lucide="upload"></i>
+        </button>
+        <input type="file" id="import-file-input" style="display: none;" accept=".json">
+        <button id="clear-all-btn" class="btn btn-icon btn-danger" title="Clear All Tasks" aria-label="Clear All Tasks">
+          <i data-lucide="trash-2"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <div class="matrix-and-controls">
+        <!-- Search and Quick Filter Bar -->
+        <section class="filter-bar">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="search-input" placeholder="Search tasks by title, notes, or tags...">
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Filter Tag:</span>
+            <select id="tag-filter">
+              <option value="all">All Tags</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Status:</span>
+            <select id="status-filter">
+              <option value="active">Active Only</option>
+              <option value="completed">Completed Only</option>
+              <option value="all">All Tasks</option>
+            </select>
+          </div>
+          <button id="quick-add-trigger-btn" class="btn btn-primary">
+            <i data-lucide="plus"></i> New Task
+          </button>
+        </section>
+
+        <!-- Dynamic Quick-Add Panel -->
+        <section class="quick-add-section collapsed" id="quick-add-panel">
+          <form id="task-form" class="task-form">
+            <div class="form-row main-row">
+              <div class="form-group flex-2">
+                <label for="task-title">Task Title</label>
+                <input type="text" id="task-title" placeholder="What needs to be done?" required autocomplete="off">
+              </div>
+              <div class="form-group flex-1">
+                <label for="task-quadrant">Quadrant Target</label>
+                <select id="task-quadrant" required>
+                  <option value="q1">Q1: Urgent & Important (Do First)</option>
+                  <option value="q2" selected>Q2: Important, Not Urgent (Schedule)</option>
+                  <option value="q3">Q3: Urgent, Not Important (Delegate)</option>
+                  <option value="q4">Q4: Not Urgent & Not Important (Eliminate)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row secondary-row">
+              <div class="form-group">
+                <label for="task-due-date">Due Date</label>
+                <input type="date" id="task-due-date">
+              </div>
+              <div class="form-group">
+                <label for="task-tag">Category Tag</label>
+                <input type="text" id="task-tag" placeholder="e.g. Work, Health, Personal" list="suggested-tags">
+                <datalist id="suggested-tags">
+                  <option value="Work"></option>
+                  <option value="Personal"></option>
+                  <option value="Health"></option>
+                  <option value="Finance"></option>
+                  <option value="Learning"></option>
+                </datalist>
+              </div>
+              <div class="form-group flex-2">
+                <label for="task-notes">Notes / Description</label>
+                <input type="text" id="task-notes" placeholder="Add details or subtasks...">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="cancel-add-btn" class="btn btn-secondary">Cancel</button>
+              <button type="submit" class="btn btn-accent">Create Task</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- The 2x2 Eisenhower Matrix Grid -->
+        <div class="matrix-grid">
+          
+          <!-- Q1: Urgent & Important -->
+          <div class="quadrant q1" id="quadrant-q1" data-quadrant="q1">
+            <header class="quadrant-header">
+              <div class="title-wrap">
+                <span class="quadrant-badge">Q1</span>
+                <h3>Do First</h3>
+              </div>
+              <span class="description">Urgent & Important</span>
+              <div class="quadrant-actions">
+                <span class="count-pill" id="count-q1">0</span>
+                <button class="btn-inline-add" data-target="q1" title="Add to Q1"><i data-lucide="plus"></i></button>
+              </div>
+            </header>
+            <div class="task-list scrollable" id="list-q1" data-quadrant="q1">
+              <!-- Tasks will be injected here -->
+            </div>
+          </div>
+
+          <!-- Q2: Important, Not Urgent -->
+          <div class="quadrant q2" id="quadrant-q2" data-quadrant="q2">
+            <header class="quadrant-header">
+              <div class="title-wrap">
+                <span class="quadrant-badge">Q2</span>
+                <h3>Schedule</h3>
+              </div>
+              <span class="description">Important, Not Urgent</span>
+              <div class="quadrant-actions">
+                <span class="count-pill" id="count-q2">0</span>
+                <button class="btn-inline-add" data-target="q2" title="Add to Q2"><i data-lucide="plus"></i></button>
+              </div>
+            </header>
+            <div class="task-list scrollable" id="list-q2" data-quadrant="q2">
+              <!-- Tasks will be injected here -->
+            </div>
+          </div>
+
+          <!-- Q3: Urgent, Not Important -->
+          <div class="quadrant q3" id="quadrant-q3" data-quadrant="q3">
+            <header class="quadrant-header">
+              <div class="title-wrap">
+                <span class="quadrant-badge">Q3</span>
+                <h3>Delegate</h3>
+              </div>
+              <span class="description">Urgent, Not Important</span>
+              <div class="quadrant-actions">
+                <span class="count-pill" id="count-q3">0</span>
+                <button class="btn-inline-add" data-target="q3" title="Add to Q3"><i data-lucide="plus"></i></button>
+              </div>
+            </header>
+            <div class="task-list scrollable" id="list-q3" data-quadrant="q3">
+              <!-- Tasks will be injected here -->
+            </div>
+          </div>
+
+          <!-- Q4: Not Urgent, Not Important -->
+          <div class="quadrant q4" id="quadrant-q4" data-quadrant="q4">
+            <header class="quadrant-header">
+              <div class="title-wrap">
+                <span class="quadrant-badge">Q4</span>
+                <h3>Eliminate</h3>
+              </div>
+              <span class="description">Not Urgent & Not Important</span>
+              <div class="quadrant-actions">
+                <span class="count-pill" id="count-q4">0</span>
+                <button class="btn-inline-add" data-target="q4" title="Add to Q4"><i data-lucide="plus"></i></button>
+              </div>
+            </header>
+            <div class="task-list scrollable" id="list-q4" data-quadrant="q4">
+              <!-- Tasks will be injected here -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Stats / Sidebar (Collapsible drawer) -->
+      <aside class="stats-sidebar collapsed" id="stats-sidebar">
+        <header class="sidebar-header">
+          <h2>Productivity Analytics</h2>
+          <button id="close-stats-btn" class="btn btn-icon btn-close" aria-label="Close Analytics">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <div class="sidebar-content">
+          <!-- Focus Score Indicator -->
+          <div class="stats-card focus-card">
+            <h3>Focus Quotient</h3>
+            <div class="focus-gauge">
+              <svg viewBox="0 0 100 100" class="gauge-svg">
+                <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                <circle cx="50" cy="50" r="40" class="gauge-fill" id="gauge-fill-circle"></circle>
+              </svg>
+              <div class="gauge-value" id="gauge-display-val">100</div>
+            </div>
+            <p class="stats-tip">Aim to keep Q2 (Important, Not Urgent) tasks above 50% for healthy long-term productivity!</p>
+          </div>
+
+          <!-- Quadrant Task Breakdown -->
+          <div class="stats-card">
+            <h3>Task Breakdown</h3>
+            <div class="breakdown-chart">
+              <div class="chart-segment" id="bar-q1" style="--percent: 25%;">
+                <span class="chart-label">Do First (Q1)</span>
+                <div class="bar-container">
+                  <div class="bar"></div>
+                  <span class="bar-value">25%</span>
+                </div>
+              </div>
+              <div class="chart-segment" id="bar-q2" style="--percent: 25%;">
+                <span class="chart-label">Schedule (Q2)</span>
+                <div class="bar-container">
+                  <div class="bar"></div>
+                  <span class="bar-value">25%</span>
+                </div>
+              </div>
+              <div class="chart-segment" id="bar-q3" style="--percent: 25%;">
+                <span class="chart-label">Delegate (Q3)</span>
+                <div class="bar-container">
+                  <div class="bar"></div>
+                  <span class="bar-value">25%</span>
+                </div>
+              </div>
+              <div class="chart-segment" id="bar-q4" style="--percent: 25%;">
+                <span class="chart-label">Eliminate (Q4)</span>
+                <div class="bar-container">
+                  <div class="bar"></div>
+                  <span class="bar-value">25%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Advice Box -->
+          <div class="stats-card advice-card">
+            <h3>Matrix Recommendations</h3>
+            <div class="advice-content" id="matrix-advice">
+              Start adding tasks to populate the matrix and receive tailored suggestions.
+            </div>
+          </div>
+
+          <!-- General Completion Card -->
+          <div class="stats-card details-card">
+            <h3>Task Stats</h3>
+            <div class="detail-row">
+              <span>Completed Tasks</span>
+              <strong id="stats-completed-tasks">0</strong>
+            </div>
+            <div class="detail-row">
+              <span>Active Tasks</span>
+              <strong id="stats-active-tasks">0</strong>
+            </div>
+            <div class="detail-row">
+              <span>Total Completed Ever</span>
+              <strong id="stats-lifetime-completed">0</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Task Edit Modal -->
+    <div class="modal-backdrop" id="edit-modal">
+      <div class="modal">
+        <header class="modal-header">
+          <h2>Edit Task</h2>
+          <button class="btn btn-icon" id="close-modal-btn" aria-label="Close edit window">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <form id="edit-task-form">
+          <input type="hidden" id="edit-task-id">
+          <div class="form-group">
+            <label for="edit-task-title">Task Title</label>
+            <input type="text" id="edit-task-title" required autocomplete="off">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-task-quadrant">Quadrant</label>
+              <select id="edit-task-quadrant" required>
+                <option value="q1">Q1: Urgent & Important</option>
+                <option value="q2">Q2: Important, Not Urgent</option>
+                <option value="q3">Q3: Urgent, Not Important</option>
+                <option value="q4">Q4: Not Urgent & Not Important</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit-task-due-date">Due Date</label>
+              <input type="date" id="edit-task-due-date">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-task-tag">Category Tag</label>
+            <input type="text" id="edit-task-tag" placeholder="e.g. Work, Personal">
+          </div>
+          <div class="form-group">
+            <label for="edit-task-notes">Notes</label>
+            <textarea id="edit-task-notes" rows="3" placeholder="Add detailed notes..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="delete-edit-btn" class="btn btn-danger-text"><i data-lucide="trash-2"></i> Delete Task</button>
+            <div class="right-actions">
+              <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Changes</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
