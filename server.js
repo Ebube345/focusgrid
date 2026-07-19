@@ -83,6 +83,10 @@ app.get('/favicon.svg', (req, res) => {
   res.sendFile(path.join(__dirname, 'favicon.svg'));
 });
 
+app.get('/favicon.png', (req, res) => {
+  res.sendFile(path.join(__dirname, 'favicon.png'));
+});
+
 app.get('/app.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.js'));
 });
