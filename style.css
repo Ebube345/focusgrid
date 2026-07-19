@@ -1618,3 +1618,243 @@ html[data-theme="light"] .moon-icon {
 .task-card.readonly-card .task-checkbox-container {
   cursor: not-allowed;
 }
+
+/* A-Player Nuggets Drawer */
+.nuggets-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 5, 8, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.nuggets-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nuggets-drawer {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 420px;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--bg-panel);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border-left: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg), var(--glass-glow);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: right var(--transition-normal);
+  padding: 1.5rem;
+}
+
+.nuggets-drawer.active {
+  right: 0;
+}
+
+.nuggets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.nuggets-title-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nuggets-icon-wrap {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: var(--color-q2-glow);
+  color: var(--color-q2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nuggets-icon-wrap i {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.nuggets-title-area h2 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.nuggets-title-area span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.nuggets-ticker {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nuggets-ticker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--color-q3);
+}
+
+.ticker-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-q3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ticker-label i {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+#nugget-ticker-text {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-main);
+  font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.nuggets-grid {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+  padding-right: 0.25rem;
+}
+
+.nugget-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.nugget-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(52, 196, 160, 0.25);
+  transform: translateY(-2px);
+}
+
+.nugget-category {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.nugget-card.highlight .nugget-category {
+  color: var(--color-q2);
+}
+
+.nugget-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.nugget-content {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.nugget-content ul {
+  padding-left: 1rem;
+  margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nugget-content li {
+  list-style-type: disc;
+}
+
+.nugget-footer-tip {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--text-muted);
+  border-top: 1px dashed var(--border-color);
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.nuggets-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.nuggets-counter {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.nuggets-btn {
+  position: relative;
+}
+
+.nuggets-btn::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: var(--color-q1);
+  border-radius: 50%;
+  border: 2px solid var(--bg-panel);
+}

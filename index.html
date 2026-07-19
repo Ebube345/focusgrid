@@ -65,6 +65,9 @@
         <button id="stats-panel-toggle" class="btn btn-icon" title="View Detailed Analytics" aria-label="View Detailed Analytics">
           <i data-lucide="bar-chart-2"></i>
         </button>
+        <button id="nuggets-panel-toggle" class="btn btn-icon nuggets-btn" title="A-Player Tips" aria-label="A-Player Tips">
+          <i data-lucide="cookie"></i>
+        </button>
         <button id="export-btn" class="btn btn-icon" title="Export Tasks (JSON)" aria-label="Export Tasks">
           <i data-lucide="download"></i>
         </button>
@@ -395,7 +398,40 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- A-Player Nuggets Panel -->
+  <div class="nuggets-overlay" id="nuggets-overlay"></div>
+  <aside class="nuggets-drawer" id="nuggets-drawer" aria-label="A-Player Tips">
+    <div class="nuggets-header">
+      <div class="nuggets-title-area">
+        <div class="nuggets-icon-wrap"><i data-lucide="cookie"></i></div>
+        <div>
+          <h2>A-Player Playbook</h2>
+          <span>Prioritization nuggets to keep you sharp</span>
+        </div>
+      </div>
+      <button class="btn btn-icon" id="close-nuggets-btn" aria-label="Close tips">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="nuggets-ticker">
+      <span class="ticker-label"><i data-lucide="zap"></i> Tip of the moment</span>
+      <p id="nugget-ticker-text"></p>
+    </div>
+
+    <div class="nuggets-grid" id="nuggets-grid">
+      <!-- Cards injected by JS -->
+    </div>
+
+    <div class="nuggets-footer">
+      <button class="btn btn-accent" id="nuggets-next-btn">
+        <i data-lucide="refresh-cw"></i> Shuffle Tips
+      </button>
+      <span class="nuggets-counter" id="nuggets-counter"></span>
+    </div>
+  </aside>
+
   <!-- Onboarding Splash Screen -->
   <div class="splash-overlay" id="splash-screen">
     <div class="splash-card">
