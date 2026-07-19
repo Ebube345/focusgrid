@@ -550,10 +550,11 @@ html[data-theme="light"] .moon-icon {
 .matrix-grid {
   display: grid;
   grid-template-columns: repeat(2, 15fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: 1.25rem;
   flex-grow: 1;
   min-height: 0;
+  align-content: start;
 }
 
 /* Quadrant Styles */
