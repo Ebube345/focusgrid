@@ -132,7 +132,7 @@ app.get('/api/users/check', async (req, res) => {
       }
       const data = await response.json();
       if (data.length > 0) {
-        // PostgreSQL lowercases unquoted column names: userId -> userid
+        // task_owners table uses quoted "userId" column (case-preserved)
         const dbUserId = data[0].userId || data[0].userid || '';
         res.json({ exists: true, userId: dbUserId });
       } else {
@@ -171,8 +171,8 @@ app.post('/api/users', async (req, res) => {
           ...getSupabaseHeaders(),
           'Prefer': 'return=representation'
         },
-        // Send both casings — Supabase/Postgres lowercases unquoted column names
-        body: JSON.stringify({ username: username.trim(), userId, userid: userId })
+        // task_owners table has a quoted "userId" column — send exact casing only
+        body: JSON.stringify({ username: username.trim(), userId })
       });
       if (!response.ok) {
         const errText = await response.text();
