@@ -131,30 +131,37 @@ async function checkAndRegisterUsername(newName) {
   const userId = getOrGenerateUserId();
 
   try {
-    const res = await fetch(`/api/users/check?username=${encodeURIComponent(newName)}`);
-    if (!res.ok) throw new Error('Network error checking username');
+    // Pass userId so the server can distinguish "I own this name" vs "someone else has it"
+    const res = await fetch(`/api/users/check?username=${encodeURIComponent(newName)}&userId=${encodeURIComponent(userId)}`);
+    if (!res.ok) throw new Error(`Server error ${res.status} checking username`);
 
     const checkResult = await res.json();
     if (checkResult.exists) {
       if (checkResult.userId === userId) {
+        // We already own this name on this device
         return { success: true };
       } else {
+        // Another device owns this name
         return { success: false, reason: 'taken' };
       }
     } else {
-      // Register new username with our client userId
+      // Name is free — register it
       const regRes = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: newName, userId })
       });
-      if (!regRes.ok) throw new Error('Network error registering username');
+      if (!regRes.ok) {
+        const errData = await regRes.json().catch(() => ({}));
+        // A conflict (409 or 500 from unique constraint) means someone else just claimed it
+        return { success: false, reason: 'taken' };
+      }
       return { success: true };
     }
   } catch (err) {
+    // Network offline — block registration rather than silently succeed
     console.error('Error validating username against server:', err);
-    // Offline fallback: allow change
-    return { success: true };
+    return { success: false, reason: 'network_error' };
   }
 }
 
@@ -1184,8 +1191,11 @@ function initEventListeners() {
       elements.splashScreen.classList.add('hidden');
       updateOwnerFilterOptions();
       render();
+    } else if (validation.reason === 'network_error') {
+      elements.splashError.textContent = `⚠️ Could not connect to the server. Please check your connection and try again.`;
+      elements.splashError.style.display = 'block';
     } else {
-      elements.splashError.textContent = `❌ The username "${chosenName}" is already claimed by another device. Please choose a different name.`;
+      elements.splashError.textContent = `❌ The username "${chosenName}" is already taken. Please choose a different name.`;
       elements.splashError.style.display = 'block';
     }
   });

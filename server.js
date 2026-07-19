@@ -124,7 +124,7 @@ app.get('/api/users/check', async (req, res) => {
 
   if (isSupabaseConfigured) {
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/users?username=ilike.${username}`, {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/task_owners?username=ilike.${username}`, {
         headers: getSupabaseHeaders()
       });
       if (!response.ok) {
@@ -132,7 +132,9 @@ app.get('/api/users/check', async (req, res) => {
       }
       const data = await response.json();
       if (data.length > 0) {
-        res.json({ exists: true, userId: data[0].userId });
+        // PostgreSQL lowercases unquoted column names: userId -> userid
+        const dbUserId = data[0].userId || data[0].userid || '';
+        res.json({ exists: true, userId: dbUserId });
       } else {
         res.json({ exists: false });
       }
@@ -163,13 +165,14 @@ app.post('/api/users', async (req, res) => {
 
   if (isSupabaseConfigured) {
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/task_owners`, {
         method: 'POST',
         headers: {
           ...getSupabaseHeaders(),
           'Prefer': 'return=representation'
         },
-        body: JSON.stringify({ username: username.trim(), userId })
+        // Send both casings — Supabase/Postgres lowercases unquoted column names
+        body: JSON.stringify({ username: username.trim(), userId, userid: userId })
       });
       if (!response.ok) {
         const errText = await response.text();
@@ -275,7 +278,7 @@ app.post('/api/tasks', async (req, res) => {
       owner || 'Anonymous'
     ];
 
-    db.run(query, params, function(err) {
+    db.run(query, params, function (err) {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -335,7 +338,7 @@ app.put('/api/tasks/:id', async (req, res) => {
       id
     ];
 
-    db.run(query, params, function(err) {
+    db.run(query, params, function (err) {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -366,7 +369,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   } else {
-    db.run('DELETE FROM tasks WHERE id = ?', [id], function(err) {
+    db.run('DELETE FROM tasks WHERE id = ?', [id], function (err) {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -395,7 +398,7 @@ app.delete('/api/tasks', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   } else {
-    db.run('DELETE FROM tasks', [], function(err) {
+    db.run('DELETE FROM tasks', [], function (err) {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -465,7 +468,7 @@ app.post('/api/settings', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   } else {
-    db.run('REPLACE INTO settings (key, value) VALUES (?, ?)', [key, String(value)], function(err) {
+    db.run('REPLACE INTO settings (key, value) VALUES (?, ?)', [key, String(value)], function (err) {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
