@@ -132,20 +132,19 @@ body {
 }
 
 .logo-icon {
-  background: linear-gradient(135deg, #22c55e, #15803d);
-  color: #fff;
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
   box-shadow: var(--shadow-sm);
 }
 
-.logo-icon i {
-  width: 1.5rem;
-  height: 1.5rem;
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .logo-text h1 {
