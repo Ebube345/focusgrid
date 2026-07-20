@@ -155,8 +155,10 @@ async function checkAndRegisterUsername(newName) {
         // We already own this name on this device
         return { success: true };
       } else {
-        // Another device owns this name
-        return { success: false, reason: 'taken' };
+        // Username exists on server under a different device's userId —
+        // log in as that user by adopting the server's authoritative userId.
+        localStorage.setItem('focusgrid_user_id', checkResult.userId);
+        return { success: true };
       }
     } else {
       // Name is free — register it
@@ -229,10 +231,10 @@ async function loadFromServer() {
       elements.usernameInput.value = storedName;
       elements.usernameInput.readOnly = true;
     } else {
-      // Username was claimed by another device
+      // Could not reach server to validate username (network error)
       elements.splashScreen.classList.remove('hidden');
       elements.splashUsernameInput.value = storedName;
-      elements.splashError.textContent = `⚠️ The username "${storedName}" is claimed by another device. Please choose a new name.`;
+      elements.splashError.textContent = `⚠️ Could not connect to the server. Please check your connection and try again.`;
       elements.splashError.style.display = 'block';
     }
   }
